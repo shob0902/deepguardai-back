@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: deepfake-detection
+    env: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: python app.py
+    plan: free
+    envVars:
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 5000
+      - key: PYTHONUNBUFFERED
+        value: "1"
+    healthCheckPath: /health
+    autoDeploy: true
+    httpHeaders:
+      - name: X-Frame-Options
+        value: DENY

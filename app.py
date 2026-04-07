@@ -24,11 +24,18 @@ app.config['MAIL_DEFAULT_SENDER'] = 'shouryashobhit1@gmail.com'
 
 mail = Mail(app)
 
-# Stable Diffusion Model Configuration (publicly accessible)
+# Stable Diffusion Model Configuration (lazy loading)
+pipe = None
 device = "cuda" if torch.cuda.is_available() else "cpu"
-pipe = DiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5", safety_checker=None)  
-pipe = pipe.to(device)  # Move pipeline to GPU if available
-# pipe.enable_model_cpu_offload() # Requires accelerator library - removed for CPU usage
+
+def load_stable_diffusion():
+    global pipe
+    if pipe is None:
+        print("Loading Stable Diffusion model...")
+        pipe = DiffusionPipeline.from_pretrained("runwayml/stable-diffusion-v1-5", safety_checker=None)
+        pipe = pipe.to(device)
+        print("Stable Diffusion model loaded!")
+    return pipe
 
 #Route to handle contct form
 @app.route('/contact', methods=['POST'])
@@ -72,6 +79,7 @@ def generate_image():
             return jsonify({'error': 'Prompt is required'}), 400
 
         # Use Stable Diffusion for image generation
+        pipe = load_stable_diffusion()
         image = pipe(
             user_prompt,
             height=512,                     # Higher resolution for better quality
@@ -122,7 +130,16 @@ def load_model():
     model.eval()
     return model
 
-model = load_model()
+# Lazy load model
+model = None
+
+def get_model():
+    global model
+    if model is None:
+        print("Loading deepfake detection model...")
+        model = load_model()
+        print("Deepfake detection model loaded!")
+    return model
 
 # Class names
 class_names = ['Fake', 'Real']
@@ -155,6 +172,7 @@ def predict():
     input_tensor = transform(image).unsqueeze(0)
 
     with torch.no_grad():
+        model = get_model()
         outputs = model(input_tensor)
         # raw scores (logits)
         logits = outputs.squeeze(0).tolist()
@@ -178,4 +196,6 @@ if __name__ == '__main__':
     print(f"Starting Flask app on port {port}...")
     print(f"Environment: {os.environ.get('FLASK_ENV', 'development')}")
     print("DeepFake Detection & AI Image Generation Service")
+    
+    # Start app immediately, model loading happens in background
     app.run(debug=False, host='0.0.0.0', port=port)
