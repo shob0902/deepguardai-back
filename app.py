@@ -196,6 +196,7 @@ if __name__ == '__main__':
     print(f"Starting Flask app on port {port}...")
     print(f"Environment: {os.environ.get('FLASK_ENV', 'development')}")
     print("DeepFake Detection & AI Image Generation Service")
+    print("App is ready to receive requests!")
     
-    # Start app immediately, model loading happens in background
+    # Start app immediately with minimal startup time
     app.run(debug=False, host='0.0.0.0', port=port)

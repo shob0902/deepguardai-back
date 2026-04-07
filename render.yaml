@@ -13,6 +13,11 @@ services:
       - key: PYTHONUNBUFFERED
         value: "1"
     healthCheckPath: /health
+    healthCheck:
+      path: /health
+      initialDelaySeconds: 30
+      periodSeconds: 10
+      timeoutSeconds: 3
     autoDeploy: true
     httpHeaders:
       - name: X-Frame-Options
