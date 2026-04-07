@@ -1,0 +1,17 @@
+torch
+torchvision
+torchaudio
+flask
+Flask-Cors
+flask-mail
+google-generativeai
+diffusers
+transformers
+accelerate
+requests
+pillow
+numpy
+opencv-python
+scikit-learn
+matplotlib
+torchcam
