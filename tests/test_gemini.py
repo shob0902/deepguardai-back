@@ -29,7 +29,7 @@ except ImportError as e:
 
 # Test Gemini API configuration
 try:
-    GEMINI_API_KEY = 'AIzaSyAkEhZj1P46P-nCjZuCES8dJIm4IgCiw3Y'
+    GEMINI_API_KEY = ''
     genai.configure(api_key=GEMINI_API_KEY)
     print("✓ Gemini API configured successfully")
 except Exception as e:
